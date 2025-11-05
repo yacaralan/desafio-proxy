@@ -1,0 +1,43 @@
+[
+    {
+        "id": "lowest",
+        "name": "Última",
+        "home_page": false,
+        "category_home_page": false,
+        "advertising_on_listing_page": true,
+        "priority_in_search": 4
+    },
+    {
+        "id": "low",
+        "name": "Inferior",
+        "home_page": false,
+        "category_home_page": false,
+        "advertising_on_listing_page": false,
+        "priority_in_search": 3
+    },
+    {
+        "id": "mid",
+        "name": "Media",
+        "home_page": false,
+        "category_home_page": true,
+        "advertising_on_listing_page": false,
+        "priority_in_search": 2
+    },
+    {
+        "id": "high",
+        "name": "Alta",
+        "home_page": false,
+        "category_home_page": true,
+        "advertising_on_listing_page": false,
+        "priority_in_search": 1
+    },
+    {
+        "id": "highest",
+        "name": "Superior",
+        "home_page": true,
+        "category_home_page": true,
+        "advertising_on_listing_page": false,
+        "priority_in_search": 0
+    }
+]
+

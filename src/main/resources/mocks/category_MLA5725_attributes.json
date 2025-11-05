@@ -1,0 +1,50 @@
+[
+  {
+    "id": "Season",
+    "name": "Season",
+    "value_type": "list",
+    "tags": {
+      "fixed": true
+    },
+    "values": [
+      {
+        "id": "Season-Spring-Summer",
+        "name": "Spring-Summer"
+      }
+    ],
+    "attribute_group_id": "FIND",
+    "attribute_group_name": "Ficha técnica"
+  },
+  {
+    "id": "GENDER",
+    "name": "Género",
+    "value_type": "list",
+    "tags": {},
+    "values": [
+      { "id": "male", "name": "Hombre" },
+      { "id": "female", "name": "Mujer" },
+      { "id": "girls", "name": "Niñas" },
+      { "id": "boys", "name": "Niños" }
+    ],
+    "attribute_group_id": "DFLT",
+    "attribute_group_name": "Otros"
+  },
+  {
+    "id": "83000",
+    "name": "Color Primario",
+    "type": "color",
+    "value_type": "list",
+    "tags": {
+      "allow_variations": true,
+      "required": true
+    },
+    "values": [
+      { "id": "91993", "name": "Rojo", "metadata": { "rgb": "#FF0000" } },
+      { "id": "91994", "name": "Rosa", "metadata": { "rgb": "#F4CCCC" } },
+      { "id": "91995", "name": "Terracota", "metadata": { "rgb": "#E06666" } }
+    ],
+    "attribute_group_id": "DFLT",
+    "attribute_group_name": "Otros"
+  }
+]
+

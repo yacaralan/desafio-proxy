@@ -1,0 +1,132 @@
+[
+  {
+    "id": "Season",
+    "name": "Season",
+    "value_type": "list",
+    "tags": {
+      "fixed": true
+    },
+    "values": [
+      {
+        "id": "Season-Spring-Summer",
+        "name": "Spring-Summer"
+      }
+    ],
+    "attribute_group_id": "FIND",
+    "attribute_group_name": "Ficha técnica"
+  },
+  {
+    "id": "GENDER",
+    "name": "Género",
+    "value_type": "list",
+    "tags": {},
+    "values": [
+      { "id": "male", "name": "Hombre" },
+      { "id": "female", "name": "Mujer" },
+      { "id": "girls", "name": "Niñas" },
+      { "id": "boys", "name": "Niños" }
+    ],
+    "attribute_group_id": "DFLT",
+    "attribute_group_name": "Otros"
+  },
+  {
+    "id": "83000",
+    "name": "Color Primario",
+    "type": "color",
+    "value_type": "list",
+    "tags": {
+      "allow_variations": true,
+      "required": true
+    },
+    "values": [
+      { "id": "91993", "name": "Rojo", "metadata": { "rgb": "#FF0000" } },
+      { "id": "91994", "name": "Rosa", "metadata": { "rgb": "#F4CCCC" } },
+      { "id": "91995", "name": "Terracota", "metadata": { "rgb": "#E06666" } },
+      { "id": "91996", "name": "Bordó", "metadata": { "rgb": "#990000" } },
+      { "id": "91997", "name": "Naranja", "metadata": { "rgb": "#FF9900" } },
+      { "id": "91998", "name": "Beige", "metadata": { "rgb": "#FCE5CD" } },
+      { "id": "91999", "name": "Piel", "metadata": { "rgb": "#F6B26B" } },
+      { "id": "92000", "name": "Marrón", "metadata": { "rgb": "#B45F06" } },
+      { "id": "92001", "name": "Amarillo", "metadata": { "rgb": "#FFFF00" } },
+      { "id": "92002", "name": "Crema", "metadata": { "rgb": "#FFF2CC" } },
+      { "id": "92003", "name": "Ocre", "metadata": { "rgb": "#FFD966" } },
+      { "id": "92004", "name": "Dorado", "metadata": { "rgb": "#BF9000" } },
+      { "id": "92005", "name": "Verde", "metadata": { "rgb": "#0C9800" } },
+      { "id": "92006", "name": "Verde claro", "metadata": { "rgb": "#D9EAD3" } },
+      { "id": "92007", "name": "Esmeralda", "metadata": { "rgb": "#93C47D" } },
+      { "id": "92008", "name": "Verde oscuro", "metadata": { "rgb": "#38761D" } },
+      { "id": "92009", "name": "Agua", "metadata": { "rgb": "#83DDFF" } },
+      { "id": "92010", "name": "Azul cielo", "metadata": { "rgb": "#D0E0E3" } },
+      { "id": "92011", "name": "Azul marino", "metadata": { "rgb": "#76A5AF" } },
+      { "id": "92012", "name": "Azul petróleo", "metadata": { "rgb": "#134F5C" } },
+      { "id": "92013", "name": "Azul", "metadata": { "rgb": "#1717FF" } },
+      { "id": "92014", "name": "Celeste", "metadata": { "rgb": "#CFE2F3" } },
+      { "id": "92015", "name": "Azul acero", "metadata": { "rgb": "#6FA8DC" } },
+      { "id": "92016", "name": "Azul oscuro", "metadata": { "rgb": "#0B5394" } },
+      { "id": "92017", "name": "Violeta oscuro", "metadata": { "rgb": "#7600FF" } },
+      { "id": "92018", "name": "Lavanda", "metadata": { "rgb": "#D9D2E9" } },
+      { "id": "92019", "name": "Lila", "metadata": { "rgb": "#8E7CC3" } },
+      { "id": "92020", "name": "Azul marino", "metadata": { "rgb": "#76A5AF" } },
+      { "id": "92021", "name": "Fucsia", "metadata": { "rgb": "#E828FF" } },
+      { "id": "92022", "name": "Salmón", "metadata": { "rgb": "#EAD1DC" } },
+      { "id": "92023", "name": "Fucsia oscuro", "metadata": { "rgb": "#C27BA0" } },
+      { "id": "92024", "name": "Púrpura", "metadata": { "rgb": "#741B47" } },
+      { "id": "92025", "name": "Negro", "metadata": { "rgb": "#000000" } },
+      { "id": "92026", "name": "Plateado", "metadata": { "rgb": "#CCCCCC" } },
+      { "id": "92027", "name": "Gris", "metadata": { "rgb": "#666666" } },
+      { "id": "92028", "name": "Blanco", "metadata": { "rgb": "#FFFFFF" } }
+    ],
+    "attribute_group_id": "DFLT",
+    "attribute_group_name": "Otros"
+  },
+  {
+    "id": "73001",
+    "name": "Color Secundario",
+    "type": "color",
+    "value_type": "list",
+    "tags": {
+      "allow_variations": true
+    },
+    "values": [
+      { "id": "82026", "name": "Rojo", "metadata": { "rgb": "#FF0000" } },
+      { "id": "82027", "name": "Rosa", "metadata": { "rgb": "#F4CCCC" } },
+      { "id": "82028", "name": "Terracota", "metadata": { "rgb": "#E06666" } },
+      { "id": "82029", "name": "Bordó", "metadata": { "rgb": "#990000" } },
+      { "id": "82030", "name": "Naranja", "metadata": { "rgb": "#FF9900" } },
+      { "id": "82031", "name": "Beige", "metadata": { "rgb": "#FCE5CD" } },
+      { "id": "82032", "name": "Piel", "metadata": { "rgb": "#F6B26B" } },
+      { "id": "82033", "name": "Marrón", "metadata": { "rgb": "#B45F06" } },
+      { "id": "82034", "name": "Amarillo", "metadata": { "rgb": "#FFFF00" } },
+      { "id": "82035", "name": "Crema", "metadata": { "rgb": "#FFF2CC" } },
+      { "id": "82036", "name": "Ocre", "metadata": { "rgb": "#FFD966" } },
+      { "id": "82037", "name": "Dorado", "metadata": { "rgb": "#BF9000" } },
+      { "id": "82038", "name": "Verde", "metadata": { "rgb": "#0C9800" } },
+      { "id": "82039", "name": "Verde claro", "metadata": { "rgb": "#D9EAD3" } },
+      { "id": "82040", "name": "Esmeralda", "metadata": { "rgb": "#93C47D" } },
+      { "id": "82041", "name": "Verde oscuro", "metadata": { "rgb": "#38761D" } },
+      { "id": "82042", "name": "Agua", "metadata": { "rgb": "#83DDFF" } },
+      { "id": "82043", "name": "Azul cielo", "metadata": { "rgb": "#D0E0E3" } },
+      { "id": "82044", "name": "Azul marino", "metadata": { "rgb": "#76A5AF" } },
+      { "id": "82045", "name": "Azul petróleo", "metadata": { "rgb": "#134F5C" } },
+      { "id": "82046", "name": "Azul", "metadata": { "rgb": "#1717FF" } },
+      { "id": "82047", "name": "Celeste", "metadata": { "rgb": "#CFE2F3" } },
+      { "id": "82048", "name": "Azul acero", "metadata": { "rgb": "#6FA8DC" } },
+      { "id": "82049", "name": "Azul oscuro", "metadata": { "rgb": "#0B5394" } },
+      { "id": "82050", "name": "Violeta oscuro", "metadata": { "rgb": "#7600FF" } },
+      { "id": "82051", "name": "Lavanda", "metadata": { "rgb": "#D9D2E9" } },
+      { "id": "82052", "name": "Lila", "metadata": { "rgb": "#8E7CC3" } },
+      { "id": "82053", "name": "Azul marino", "metadata": { "rgb": "#351C75" } },
+      { "id": "82054", "name": "Fucsia", "metadata": { "rgb": "#E828FF" } },
+      { "id": "82055", "name": "Salmón", "metadata": { "rgb": "#EAD1DC" } },
+      { "id": "82056", "name": "Fucsia oscuro", "metadata": { "rgb": "#C27BA0" } },
+      { "id": "82057", "name": "Púrpura", "metadata": { "rgb": "#741B47" } },
+      { "id": "82058", "name": "Negro", "metadata": { "rgb": "#000000" } },
+      { "id": "82059", "name": "Plateado", "metadata": { "rgb": "#CCCCCC" } },
+      { "id": "82060", "name": "Gris", "metadata": { "rgb": "#666666" } },
+      { "id": "82061", "name": "Blanco", "metadata": { "rgb": "#FFFFFF" } }
+    ],
+    "attribute_group_id": "DFLT",
+    "attribute_group_name": "Otros"
+  }
+]
+

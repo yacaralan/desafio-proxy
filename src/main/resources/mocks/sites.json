@@ -1,0 +1,23 @@
+[
+    {
+        "default_currency_id": "CRC",
+        "id": "MCR",
+        "name": "Costa Rica"
+    },
+    {
+        "default_currency_id": "ARS",
+        "id": "MLA",
+        "name": "Argentina"
+    },
+    {
+        "default_currency_id": "BRL",
+        "id": "MLB",
+        "name": "Brasil"
+    },
+    {
+        "default_currency_id": "GTQ",
+        "id": "MGT",
+        "name": "Guatemala"
+    }
+]
+

@@ -1,0 +1,80 @@
+[
+    {
+        "listing_type_id": "gold_pro",
+        "listing_type_name": "Premium",
+        "listing_exposure": "highest",
+        "requires_picture": true,
+        "currency_id": "ARS",
+        "listing_fee_amount": 0,
+        "sale_fee_amount": 0.14,
+        "free_relist": false,
+        "stop_time": "2041-06-13T00:00:00.000-04:00"
+    },
+    {
+        "listing_type_id": "gold_premium",
+        "listing_type_name": "Oro Premium",
+        "listing_exposure": "highest",
+        "requires_picture": true,
+        "currency_id": "ARS",
+        "listing_fee_amount": 0,
+        "sale_fee_amount": 0,
+        "free_relist": false,
+        "stop_time": "2021-08-17T00:00:00.000-04:00"
+    },
+    {
+        "listing_type_id": "gold_special",
+        "listing_type_name": "Clásica",
+        "listing_exposure": "highest",
+        "requires_picture": true,
+        "currency_id": "ARS",
+        "listing_fee_amount": 0,
+        "sale_fee_amount": 0.06,
+        "free_relist": false,
+        "stop_time": "2041-06-13T00:00:00.000-04:00"
+    },
+    {
+        "listing_type_id": "gold",
+        "listing_type_name": "Oro",
+        "listing_exposure": "high",
+        "requires_picture": true,
+        "currency_id": "ARS",
+        "listing_fee_amount": 0,
+        "sale_fee_amount": 0,
+        "free_relist": false,
+        "stop_time": "2021-08-17T00:00:00.000-04:00"
+    },
+    {
+        "listing_type_id": "silver",
+        "listing_type_name": "Plata",
+        "listing_exposure": "mid",
+        "requires_picture": false,
+        "currency_id": "ARS",
+        "listing_fee_amount": 0,
+        "sale_fee_amount": 0,
+        "free_relist": false,
+        "stop_time": "2021-08-17T00:00:00.000-04:00"
+    },
+    {
+        "listing_type_id": "bronze",
+        "listing_type_name": "Bronce",
+        "listing_exposure": "low",
+        "requires_picture": false,
+        "currency_id": "ARS",
+        "listing_fee_amount": 0,
+        "sale_fee_amount": 0,
+        "free_relist": false,
+        "stop_time": "2021-08-17T00:00:00.000-04:00"
+    },
+    {
+        "listing_type_id": "free",
+        "listing_type_name": "Gratuita",
+        "listing_exposure": "lowest",
+        "requires_picture": true,
+        "currency_id": "ARS",
+        "listing_fee_amount": 0,
+        "sale_fee_amount": 0,
+        "free_relist": false,
+        "stop_time": "2021-08-17T00:00:00.000-04:00"
+    }
+]
+
