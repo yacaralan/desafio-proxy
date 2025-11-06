@@ -2,46 +2,47 @@ Desafio: Proxy de APIs — Primera versión
 
 Resumen
 
-Esta es una primera versión de un "proxy de apis" implementado en Java 21 con Spring Boot (WebFlux) y Maven.
+Esta es una versión del proxy de APIs implementado en Java 21 con Spring Boot (WebFlux) y Maven.
+
+Estado y resumen de cambios recientes
+
+- Las reglas de rate-limiting ahora modelan el tipo con `RateLimitType` y la lógica por tipo (validación, matching, computeKey, index/remove) está delegada en implementaciones separadas de `RateLimitStrategy` (clases en `src/main/java/org/example/ratelimit/strategy`), lo que facilita tests unitarios y mantenimiento.
+- `RateLimitRuleManager` delega validación en `RateLimitType` y crea `RateLimitRule` con un id único.
+- `RateLimitService` mantiene índices para búsqueda eficiente y delega operaciones de indexado/eliminación en `RateLimitType`.
+- Hay un cliente mock (`MockProxyClient`) disponible bajo el profile `mock-client` y lee los archivos desde `src/main/resources/mocks/` para que los mocks estén disponibles también en el JAR final.
 
 Objetivos cubiertos por ahora
 
-- Proxy transparente hacia api.mercadolibre.com: cualquier ruta enviada al proxy se reenvía al host configurado en `proxy.target-base-url`.
-- Rate limiting naive configurable (in-memory) con reglas por IP, por path y combinadas (IP+path) usando Bucket4j.
+- Proxy transparente hacia `api.mercadolibre.com`: cualquier ruta enviada al proxy se reenvía al host configurado en `proxy.target-base-url`.
+- Rate limiting en memoria con Bucket4j: reglas por IP, por path, combinadas (IP+path) y una regla GLOBAL (única) que puede reemplazar a la anterio
 - Estadísticas en memoria naive: totales, permitidos, denegados, contadores por path y por IP.
-- Interfaz REST administrativa para ver estadísticas y reglas (/admin/stats, /admin/rules) y añadir reglas.
+- Interfaz REST administrativa para ver estadísticas y reglas (`/admin/stats`, `/admin/rules`) y añadir reglas.
 - Basado en WebFlux para facilitar alto throughput.
 
 Stack:
 
-- `pom.xml` — convertido a proyecto Spring Boot 3.2 + dependencias clave:
-  - `spring-boot-starter-webflux`: pila reactiva para alto rendimiento.
-  - `reactor-netty-http`: cliente HTTP reactivo.
-  - `bucket4j-core`: rate limiting in-memory.
-  - `spring-boot-starter-actuator`: salud/monitorización.
-  Motivo: ofrecer una base escalable y dependencias necesarias para el proxy.
+- Spring Boot 3.2 + WebFlux (reactive stack)
+- Bucket4j (in-memory rate-limiter)
+- Reactor Netty (server/client)
+- JUnit/Mockito para tests
 
-- `src/main/java/org/example/Main.java` — application entry point (Spring Boot).
-  Motivo: arrancar la aplicación Spring Boot.
+Arquitectura / ficheros clave
 
-- `src/main/java/org/example/config/ProxyConfig.java` — define `WebClient` apuntando a `proxy.target-base-url` y desactivar redirecciones.
-  Motivo: centralizar la configuración del cliente usado para proxy.
+- `src/main/java/org/example/config/ProxyConfig.java` — configuración del `WebClient` usado para el upstream.
+- `src/main/java/org/example/client/MockProxyClient.java` — cliente para servir mocks cuando se activa el profile `mock-client`.
+- `src/main/resources/mocks/` — ejemplos y respuestas mock utilizadas por el `MockProxyClient` y empaquetadas en el JAR.
 
-- `src/main/java/org/example/ratelimit/RateLimitService.java` — servicio en memoria con reglas (IP, PATH, IP_PATH, GLOBAL) usando Bucket4j.
-  Motivo: implementar control de cantidad máxima de llamados por distintos criterios.
+Configuración (`src/main/resources/application.properties`)
 
-- `src/main/java/org/example/stats/StatsService.java` — servicio en memoria para capturar estadísticas simples.
-  Motivo: almacenar métricas de uso para inspección rápida.
+- `server.port=8080`
+- `proxy.target-base-url` — URL del upstream (por defecto `https://api.mercadolibre.com` en esta versión).
+- `proxy.default-content-type` — contenido que el proxy añadirá por defecto cuando el upstream no devuelva `Content-Type`. Dejar vacío para no forzar header.
+- SSL/HTTPS: esta configuración incluye una entrada de keystore (`keystore.p12`) y `server.ssl.enabled=true` para permitir pruebas locales sobre HTTPS; ajusta según tu entorno.
 
-- `src/main/java/org/example/controller/ProxyController.java` — controlador reactivo que intercepta todas las rutas `/**` y reenvía al `WebClient`.
-  - Excluye rutas `/admin` y `/actuator`.
-  - Aplica rate-limit y registra estadísticas.
-  Motivo: comportamiento core del proxy.
+Autenticación para endpoints admin
 
-- `src/main/java/org/example/controller/AdminController.java` — endpoints REST para consultar estadísticas y reglas y añadir nuevas reglas.
-  Motivo: control y visibilidad.
-
-- `src/main/resources/application.properties` — configuración mínima (puerto 8080, SSL y URL objetivo).
+- Los endpoints `/admin/**` están protegidos con HTTP Basic.
+- Las credenciales se leen desde `application.properties` como `admin.username` y `admin.password` en texto plano para desarrollo.
 
 Cómo ejecutar
 
@@ -57,37 +58,49 @@ mvn -DskipTests package
 java -jar target/desafio-proxy-1.0-SNAPSHOT.jar
 ```
 
-3) Endpoints útiles:
+3) Ejecutar tests (unit + integration):
+
+```bash
+mvn test
+```
+
+Usar el cliente mock (profile `mock-client`):
+
+```bash
+mvn -Dspring-boot.run.profiles=mock-client spring-boot:run
+# o si arrancás el JAR
+java -Dspring.profiles.active=mock-client -jar target/desafio-proxy-1.0-SNAPSHOT.jar
+```
+
+EndPoints útiles
+
 - Proxy: http://localhost:8080/{ruta}
-  Ejemplo: curl localhost:8080/categories/MLA97994 -> reenvía a https://api.mercadolibre.com/categories/MLA97994
+  Ejemplo: curl http://localhost:8080/sites -> reenvía a `${proxy.target.base.url}/sites`
 - Admin:
   - GET /admin/stats
   - GET /admin/rules
-  - POST /admin/rules  (body JSON: {"type":"IP|PATH|IP_PATH|GLOBAL","pattern":"...","rpm":1000})
+  - POST /admin/rules (body JSON con `type`, `ip`, `path`, `rpm`)
+  - DELETE /admin/rules/{id}
 
-Notas sobre diseño y escalabilidad
+Formato del body para crear reglas (POST /admin/rules)
 
-- WebFlux (Netty) y WebClient: pila no bloqueante con baja latencia y alto throughput, adecuada para objetivo de 50k req/s en escenarios con la infraestructura correcta.
-- Rate limiting in-memory (Bucket4j): sencillo y rápido; en producción para escalar horizontalmente se recomienda usar una solución distribuida (Redis-backed buckets o una capa de API-GW con rate limiting centralizado).
-- Estadísticas en memoria: suficiente para POC; para producción usar una base de series temporales o datastore (InfluxDB, Prometheus, Elastic) y exponer métricas a través de /actuator/metrics.
-- Balanceo y escalado: desplegar múltiples instancias detrás de un load-balancer, mantener estado de rate-limit en un store compartido para políticas globales o por IP.
+- `type`: required, one of `IP`, `PATH`, `IP_PATH`, `GLOBAL` (usa `RateLimitType` internamente).
+- `ip`: opcional o requerido según `type`.
+- `path`: opcional o requerido según `type` (prefijos admitidos con `/*`).
+- `rpm`: required, entero positivo.
 
-Limitaciones conocidas y próximos pasos
+Ejemplos válidos:
+- IP: `{ "type": "IP", "ip": "127.0.0.1", "rpm": 100 }`
+- PATH: `{ "type": "PATH", "path": "/api/test", "rpm": 50 }`
+- IP_PATH: `{ "type": "IP_PATH", "ip": "192.168.1.1", "path": "/api/user", "rpm": 10 }`
+- GLOBAL: `{ "type": "GLOBAL", "rpm": 1000 }`
 
-- El rate-limiter actual es in-memory y no comparte estado entre instancias.
-- No hay caching (requisito: sin cache). Si se necesitara caching, agregar una estrategia configurable.
-- No hay UI; es REST básico.
-- Seguridad: no se han agregado autenticación/autorización para los endpoints admin.
+Notas y recomendaciones
 
-Diagrama simple (top-level):
+- Mocks empaquetados: `MockProxyClient` lee desde `src/main/resources/mocks` para que los mismos archivos estén disponibles en el JAR; esto permite ejecutar la app sin depender del upstream.
+- Escalabilidad: el rate-limiter es in-memory. Para escalar horizontalmente, migrar los estados de rate-limit a un backend compartido (Redis + Bucket4j o similar).
+- Seguridad: no usar las credenciales de ejemplo en producción; en producción usar vault/secret manager y TLS en los endpoints.
 
-Client(s) --> Load Balancer --> Proxy Instances (this app) --> api.mercadolibre.com
-                                           |
-                                           +-> Stats (in-memory / to be externalized)
+Contribuciones y tests
 
-Posibles proximas mejoras:
-- persistencia de métricas (Prometheus/InfluxDB),
-- rate-limit distribuido (quizas Redis + Bucket4j extension?),
-- pruebas de carga y ajuste de configuración Reactor Netty,
-- visualización estadísticas,
-- diagramas más detallados (arquitectura),
+- ejecutar `mvn test` para ver la cobertura.

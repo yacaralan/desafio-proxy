@@ -16,15 +16,13 @@ public class StatsService {
     private final LongAdder totalRequests = new LongAdder();
     private final LongAdder allowedRequests = new LongAdder();
     private final LongAdder deniedRequests = new LongAdder();
-
-    // Upstream error counters
+	
     private final LongAdder upstreamClientErrors = new LongAdder(); // 4xx
     private final LongAdder upstreamServerErrors = new LongAdder(); // 5xx
 
     private final ConcurrentHashMap<String, LongAdder> byPath = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, LongAdder> byIp = new ConcurrentHashMap<>();
-
-    // Per-path / per-ip upstream error breakdown
+	
     private final ConcurrentHashMap<String, LongAdder> upstream4xxByPath = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, LongAdder> upstream5xxByPath = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, LongAdder> upstream4xxByIp = new ConcurrentHashMap<>();
@@ -37,10 +35,7 @@ public class StatsService {
         byIp.computeIfAbsent(ip == null ? "unknown" : ip, p -> new LongAdder()).increment();
         LOGGER.debug("Recorded request ip={} path={} allowed={}", ip, path, allowed);
     }
-
-    /**
-     * Record an upstream response status (from the proxied client). Tracks 4xx and 5xx counts and breakdowns.
-     */
+	
     public void recordUpstreamStatus(String ip, String path, int status) {
         String p = path == null ? "unknown" : path;
         String i = ip == null ? "unknown" : ip;

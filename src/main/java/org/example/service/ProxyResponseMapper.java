@@ -10,21 +10,21 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ProxyResponseMapper {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProxyResponseMapper.class);
-
-    public ResponseEntity<byte[]> map(ProxyResponse proxyResp, String defaultContentType) {
-        if (proxyResp == null) {
-            LOGGER.warn("ProxyResponseMapper.map received null proxyResp");
-            return ResponseEntity.status(502).body(new byte[0]);
-        }
-
-        HttpHeaders respHeaders = HeaderUtils.filterHopByHop(proxyResp.getHeaders());
-        if (!HeaderUtils.hasContentType(respHeaders) && defaultContentType != null && !defaultContentType.isBlank()) {
-            respHeaders.set("Content-Type", defaultContentType);
-        }
-
-        byte[] body = proxyResp.getBody() == null ? new byte[0] : proxyResp.getBody();
-        return ResponseEntity.status(proxyResp.getStatus()).headers(respHeaders).body(body);
-    }
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProxyResponseMapper.class);
+	
+	public ResponseEntity<byte[]> map(ProxyResponse proxyResponse, String defaultContentType) {
+		if (proxyResponse == null) {
+			LOGGER.warn("ProxyResponseMapper.map received null proxyResp");
+			return ResponseEntity.status(502).body(new byte[0]);
+		}
+		
+		HttpHeaders respHeaders = HeaderUtils.filterHopByHop(proxyResponse.getHeaders());
+		if (!HeaderUtils.hasContentType(respHeaders) && defaultContentType != null && !defaultContentType.isBlank()) {
+			respHeaders.set("Content-Type", defaultContentType);
+		}
+		
+		byte[] body = proxyResponse.getBody() == null ? new byte[0] : proxyResponse.getBody();
+		return ResponseEntity.status(proxyResponse.getStatus()).headers(respHeaders).body(body);
+	}
 }

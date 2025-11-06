@@ -33,6 +33,12 @@
             <artifactId>reactor-netty-http</artifactId>
         </dependency>
 
+        <!-- Spring Security (Reactive) for admin endpoints authentication -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
         <!-- In-memory rate limiting -->
         <dependency>
             <groupId>com.github.vladimir-bukhtoyarov</groupId>

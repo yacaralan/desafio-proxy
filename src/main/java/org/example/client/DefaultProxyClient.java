@@ -20,7 +20,6 @@ public class DefaultProxyClient implements ProxyClient {
 
     @Override
     public Mono<ProxyResponse> execute(HttpMethod method, String uri, HttpHeaders headers, Mono<byte[]> body) {
-        // Log at INFO level the upstream request that will be executed
         LOGGER.info("Executing upstream request method={} uri={} headers={}", method, uri, headers);
 
         WebClient.RequestBodySpec req = webClient.method(method).uri(uri).headers(h -> {
@@ -36,8 +35,7 @@ public class DefaultProxyClient implements ProxyClient {
 
         return spec.exchangeToMono(resp -> resp.toEntity(byte[].class)
                 .map(entity -> {
-                    // Log upstream response for debugging
-                    LOGGER.info("Upstream responded status={} headers={}", entity.getStatusCode().value(), entity.getHeaders());
+                    LOGGER.debug("Upstream responded status={} headers={}", entity.getStatusCode().value(), entity.getHeaders());
                     byte[] b = entity.getBody() == null ? new byte[0] : entity.getBody();
                     return new ProxyResponse(entity.getStatusCode().value(), entity.getHeaders(), b);
                 }))

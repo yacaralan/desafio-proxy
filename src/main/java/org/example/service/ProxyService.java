@@ -66,15 +66,13 @@ public class ProxyService {
         Mono<ProxyResponse> responseMono = requiresBody(method)
                 ? proxyClient.execute(method, uri, copy, body)
                 : proxyClient.execute(method, uri, copy, Mono.empty());
-
-        // Convert empty upstream to a null value so mapProxyResponse handles it consistently
+		
         return responseMono
                 .map(pr -> mapProxyResponse(pr, ip, path, uri))
-                .onErrorResume(ex -> getErrorResponseEntityMono(ex, uri, ip, path));
+                .onErrorResume(ex -> getErrorResponseEntityMono(ex, ip, path));
     }
 
-    private Mono<ResponseEntity<byte[]>> getErrorResponseEntityMono(Throwable ex, String uri, String ip, String path) {
-        LOGGER.error("Error when calling upstream for uri={}: {}", uri, ex.getMessage(), ex);
+    private Mono<ResponseEntity<byte[]>> getErrorResponseEntityMono(Throwable ex, String ip, String path) {
         statsService.recordUpstreamStatus(ip, path, 502);
         HttpHeaders headers = new HttpHeaders();
         if (defaultContentType != null && !defaultContentType.isBlank()) headers.set("Content-Type", defaultContentType);
