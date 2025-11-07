@@ -28,8 +28,7 @@ public class PathStrategy implements RateLimitStrategy {
 							   ConcurrentMap<String, RateLimitRule> ipPathIndex) {
 		String path = rule.getPath();
 		if (path != null && path.endsWith("/*")) {
-			String key = path;
-			return pathPrefixIndex.put(key, rule);
+			return pathPrefixIndex.put(path, rule);
 		} else {
 			String key = path == null ? "" : path;
 			return pathExactIndex.put(key, rule);
@@ -64,9 +63,6 @@ public class PathStrategy implements RateLimitStrategy {
 	private static boolean pathMatches(String pattern, String path) {
 		if (pattern == null) {
 			return false;
-		}
-		if ("*".equals(pattern)) {
-			return true;
 		}
 		if (pattern.endsWith("/*")) {
 			String prefix = pattern.substring(0, pattern.length() - 1); // keep trailing /
