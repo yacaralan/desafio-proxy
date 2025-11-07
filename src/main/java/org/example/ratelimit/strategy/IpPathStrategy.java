@@ -4,7 +4,6 @@ import org.example.controller.RateLimitRuleRequest;
 import org.example.ratelimit.RateLimitRule;
 
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class IpPathStrategy implements RateLimitStrategy {
@@ -22,24 +21,25 @@ public class IpPathStrategy implements RateLimitStrategy {
     }
 
     @Override
-    public RateLimitRule index(RateLimitRule rule, ConcurrentMap<String, RateLimitRule> ipIndex, ConcurrentMap<String, RateLimitRule> pathExactIndex, ConcurrentMap<String, RateLimitRule> pathPrefixIndex, ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPathIndex) {
-        String ip = rule.getIp() == null ? "" : rule.getIp();
-        String pathKey = rule.getPath() == null ? "" : rule.getPath();
-        ConcurrentMap<String, RateLimitRule> inner = ipPathIndex.computeIfAbsent(ip, k -> new ConcurrentHashMap<>());
-        return inner.put(pathKey, rule);
+    public RateLimitRule index(RateLimitRule rule,
+							   ConcurrentMap<String, RateLimitRule> ipIndex,
+							   ConcurrentMap<String, RateLimitRule> pathExactIndex,
+							   ConcurrentMap<String, RateLimitRule> pathPrefixIndex,
+							   ConcurrentMap<String, RateLimitRule> ipPathIndex) {
+        String ipPart = rule.getIp() == null ? "" : rule.getIp();
+        String pathPart = rule.getPath() == null ? "" : rule.getPath();
+        String composite = ipPart + "|" + pathPart;
+        return ipPathIndex.put(composite, rule);
     }
 
     @Override
-    public void removeFromIndex(RateLimitRule rule, ConcurrentMap<String, RateLimitRule> ipIndex, ConcurrentMap<String, RateLimitRule> pathExactIndex, ConcurrentMap<String, RateLimitRule> pathPrefixIndex, ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPathIndex) {
-        String ipPart = rule.getIp() == null ? "" : rule.getIp();
-        String pathKey = rule.getPath() == null ? "" : rule.getPath();
-        ConcurrentMap<String, RateLimitRule> inner = ipPathIndex.get(ipPart);
-        if (inner != null) {
-            inner.remove(pathKey, rule);
-            if (inner.isEmpty()) {
-                ipPathIndex.remove(ipPart, inner);
-            }
-        }
+    public void removeFromIndex(RateLimitRule rule,
+								ConcurrentMap<String, RateLimitRule> ipIndex,
+								ConcurrentMap<String, RateLimitRule> pathExactIndex,
+								ConcurrentMap<String, RateLimitRule> pathPrefixIndex,
+								ConcurrentMap<String, RateLimitRule> ipPathIndex) {
+        String composite = (rule.getIp() == null ? "" : rule.getIp()) + "|" + (rule.getPath() == null ? "" : rule.getPath());
+        ipPathIndex.remove(composite, rule);
     }
 
     @Override

@@ -43,7 +43,7 @@ public class GlobalStrategyTest {
     public void index_and_remove_noOp() {
         ConcurrentMap<String, RateLimitRule> ipIndex = new ConcurrentHashMap<>();
         ConcurrentMap<String, RateLimitRule> pathExact = new ConcurrentHashMap<>();
-        ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPath = new ConcurrentHashMap<>();
+        ConcurrentMap<String, RateLimitRule> ipPath = new ConcurrentHashMap<>();
         ConcurrentMap<String, RateLimitRule> pathPrefix = new ConcurrentHashMap<>();
 
         RateLimitRule r = new RateLimitRule(RateLimitType.GLOBAL, "*", null, 1);
@@ -67,9 +67,9 @@ public class GlobalStrategyTest {
         for (RateLimitRule r : service.getRules()) service.removeRuleById(r.getId());
         assertTrue(service.getRules().isEmpty());
 
-        RateLimitRule first = new RateLimitRule(RateLimitType.GLOBAL, "*", null, 1);
+        RateLimitRule first = new RateLimitRule(RateLimitType.GLOBAL, null, null, 1);
         service.addRule(first);
-        RateLimitRule second = new RateLimitRule(RateLimitType.GLOBAL, "*", null, 2);
+        RateLimitRule second = new RateLimitRule(RateLimitType.GLOBAL, null, null, 2);
         service.addRule(second);
 
         assertNull(service.findRuleById(first.getId()), "first GLOBAL rule should have been removed");

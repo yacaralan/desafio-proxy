@@ -60,19 +60,18 @@ public class IpPathStrategyTest {
 	public void index_and_remove_updateIpPathIndex() {
 		ConcurrentMap<String, RateLimitRule> ipIndex = new ConcurrentHashMap<>();
 		ConcurrentMap<String, RateLimitRule> pathExact = new ConcurrentHashMap<>();
-		ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPath = new ConcurrentHashMap<>();
 		ConcurrentMap<String, RateLimitRule> pathPrefix = new ConcurrentHashMap<>();
+		ConcurrentMap<String, RateLimitRule> ipPath = new ConcurrentHashMap<>();
 		
 		RateLimitRule r = new RateLimitRule(RateLimitType.IP_PATH, "8.8.8.8", "/items/*", 50);
 		RateLimitRule previous = strategy.index(r, ipIndex, pathExact, pathPrefix, ipPath);
 		assertNull(previous);
-		assertTrue(ipPath.containsKey("8.8.8.8"));
-		ConcurrentMap<String, RateLimitRule> inner = ipPath.get("8.8.8.8");
-		assertNotNull(inner);
-		assertEquals(r, inner.get("/items/*"));
-		
+		String composite = "8.8.8.8|/items/*";
+		assertTrue(ipPath.containsKey(composite));
+		assertEquals(r, ipPath.get(composite));
+
 		strategy.removeFromIndex(r, ipIndex, pathExact, pathPrefix, ipPath);
-		assertFalse(ipPath.containsKey("8.8.8.8"));
+		assertFalse(ipPath.containsKey(composite));
 	}
 	
 	@Test

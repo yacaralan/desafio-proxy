@@ -20,13 +20,21 @@ public class IpStrategy implements RateLimitStrategy {
 	}
 	
 	@Override
-	public RateLimitRule index(RateLimitRule rule, ConcurrentMap<String, RateLimitRule> ipIndex, ConcurrentMap<String, RateLimitRule> pathExactIndex, ConcurrentMap<String, RateLimitRule> pathPrefixIndex, ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPathIndex) {
+	public RateLimitRule index(RateLimitRule rule,
+							   ConcurrentMap<String, RateLimitRule> ipIndex,
+							   ConcurrentMap<String, RateLimitRule> pathExactIndex,
+							   ConcurrentMap<String, RateLimitRule> pathPrefixIndex,
+							   ConcurrentMap<String, RateLimitRule> ipPathIndex) {
 		String key = rule.getIp() == null ? "" : rule.getIp();
 		return ipIndex.put(key, rule);
 	}
 	
 	@Override
-	public void removeFromIndex(RateLimitRule rule, ConcurrentMap<String, RateLimitRule> ipIndex, ConcurrentMap<String, RateLimitRule> pathExactIndex, ConcurrentMap<String, RateLimitRule> pathPrefixIndex, ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPathIndex) {
+	public void removeFromIndex(RateLimitRule rule,
+								ConcurrentMap<String, RateLimitRule> ipIndex,
+								ConcurrentMap<String, RateLimitRule> pathExactIndex,
+								ConcurrentMap<String, RateLimitRule> pathPrefixIndex,
+								ConcurrentMap<String, RateLimitRule> ipPathIndex) {
 		String key = rule.getIp() == null ? "" : rule.getIp();
 		ipIndex.remove(key, rule);
 	}
@@ -37,7 +45,7 @@ public class IpStrategy implements RateLimitStrategy {
 		if (ruleIp == null) {
 			return false;
 		}
-		return "*".equals(ruleIp) || ruleIp.equals(ip);
+		return ruleIp.equals(ip);
 	}
 	
 	@Override

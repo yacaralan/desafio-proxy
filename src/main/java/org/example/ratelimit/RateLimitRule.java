@@ -9,18 +9,18 @@ public final class RateLimitRule {
 	private final RateLimitType type;
 	private final String ip;
 	private final String path;
-	private final long requestsPerMinute;
+	private final long rpm;
 	
-	public RateLimitRule(RateLimitType type, String ip, String path, long requestsPerMinute) {
-		this(UUID.randomUUID().toString(), type, ip, path, requestsPerMinute);
+	public RateLimitRule(RateLimitType type, String ip, String path, long rpm) {
+		this(UUID.randomUUID().toString(), type, ip, path, rpm);
 	}
 	
-	public RateLimitRule(String id, RateLimitType type, String ip, String path, long requestsPerMinute) {
+	public RateLimitRule(String id, RateLimitType type, String ip, String path, long rpm) {
 		this.id = Objects.requireNonNull(id, "id");
 		this.type = Objects.requireNonNull(type, "type");
 		this.ip = ip;
 		this.path = path;
-		this.requestsPerMinute = requestsPerMinute;
+		this.rpm = rpm;
 	}
 	
 	public boolean matches(String ip, String path) {
@@ -47,13 +47,13 @@ public final class RateLimitRule {
 		return path;
 	}
 	
-	public long getRequestsPerMinute() {
-		return requestsPerMinute;
+	public long getRpm() {
+		return rpm;
 	}
 	
 	@Override
 	public String toString() {
-		return "RateLimitRule{" + "id='" + id + '\'' + ", type=" + type + ", ip='" + ip + '\'' + ", path='" + path + '\'' + ", rpm=" + requestsPerMinute + '}';
+		return "RateLimitRule{" + "id='" + id + '\'' + ", type=" + type + ", ip='" + ip + '\'' + ", path='" + path + '\'' + ", rpm=" + rpm + '}';
 	}
 	
 	@Override

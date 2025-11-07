@@ -16,13 +16,21 @@ public class GlobalStrategy implements RateLimitStrategy {
     }
 
     @Override
-    public RateLimitRule index(RateLimitRule r, ConcurrentMap<String, RateLimitRule> ipIndex, ConcurrentMap<String, RateLimitRule> pathExactIndex, ConcurrentMap<String, RateLimitRule> pathPrefixIndex, ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPathIndex) {
+    public RateLimitRule index(RateLimitRule rule,
+							   ConcurrentMap<String, RateLimitRule> ipIndex,
+							   ConcurrentMap<String, RateLimitRule> pathExactIndex,
+							   ConcurrentMap<String, RateLimitRule> pathPrefixIndex,
+							   ConcurrentMap<String, RateLimitRule> ipPathIndex) {
         // nothing to index for global
         return null;
     }
 
     @Override
-    public void removeFromIndex(RateLimitRule r, ConcurrentMap<String, RateLimitRule> ipIndex, ConcurrentMap<String, RateLimitRule> pathExactIndex, ConcurrentMap<String, RateLimitRule> pathPrefixIndex, ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPathIndex) {
+    public void removeFromIndex(RateLimitRule rule,
+								ConcurrentMap<String, RateLimitRule> ipIndex,
+								ConcurrentMap<String, RateLimitRule> pathExactIndex,
+								ConcurrentMap<String, RateLimitRule> pathPrefixIndex,
+								ConcurrentMap<String, RateLimitRule> ipPathIndex) {
         // nothing to remove
     }
 

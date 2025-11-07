@@ -21,7 +21,11 @@ public class PathStrategy implements RateLimitStrategy {
 	}
 	
 	@Override
-	public RateLimitRule index(RateLimitRule rule, ConcurrentMap<String, RateLimitRule> ipIndex, ConcurrentMap<String, RateLimitRule> pathExactIndex, ConcurrentMap<String, RateLimitRule> pathPrefixIndex, ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPathIndex) {
+	public RateLimitRule index(RateLimitRule rule,
+							   ConcurrentMap<String, RateLimitRule> ipIndex,
+							   ConcurrentMap<String, RateLimitRule> pathExactIndex,
+							   ConcurrentMap<String, RateLimitRule> pathPrefixIndex,
+							   ConcurrentMap<String, RateLimitRule> ipPathIndex) {
 		String path = rule.getPath();
 		if (path != null && path.endsWith("/*")) {
 			String key = path;
@@ -33,7 +37,11 @@ public class PathStrategy implements RateLimitStrategy {
 	}
 	
 	@Override
-	public void removeFromIndex(RateLimitRule rule, ConcurrentMap<String, RateLimitRule> ipIndex, ConcurrentMap<String, RateLimitRule> pathExactIndex, ConcurrentMap<String, RateLimitRule> pathPrefixIndex, ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPathIndex) {
+	public void removeFromIndex(RateLimitRule rule,
+								ConcurrentMap<String, RateLimitRule> ipIndex,
+								ConcurrentMap<String, RateLimitRule> pathExactIndex,
+								ConcurrentMap<String, RateLimitRule> pathPrefixIndex,
+								ConcurrentMap<String, RateLimitRule> ipPathIndex) {
 		String path = rule.getPath();
 		if (path != null && path.endsWith("/*")) {
 			pathPrefixIndex.remove(path, rule);

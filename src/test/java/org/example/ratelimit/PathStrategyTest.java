@@ -57,7 +57,7 @@ public class PathStrategyTest {
 	public void index_and_remove_updatePathIndexes() {
 		ConcurrentMap<String, RateLimitRule> ipIndex = new ConcurrentHashMap<>();
 		ConcurrentMap<String, RateLimitRule> pathExact = new ConcurrentHashMap<>();
-		ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPath = new ConcurrentHashMap<>();
+		ConcurrentMap<String, RateLimitRule> ipPath = new ConcurrentHashMap<>();
 		ConcurrentMap<String, RateLimitRule> pathPrefix = new ConcurrentHashMap<>();
 		
 		RateLimitRule exact = new RateLimitRule(RateLimitType.PATH, null, "/bar", 100);

@@ -10,20 +10,17 @@ public interface RateLimitStrategy {
 	
 	boolean isGlobal();
 	
-	/**
-	 * Index the provided rule into the provided indexes. Returns the previous rule stored for the same key (if any).
-	 */
 	RateLimitRule index(RateLimitRule rule,
-				   ConcurrentMap<String, RateLimitRule> ipIndex,
-				   ConcurrentMap<String, RateLimitRule> pathExactIndex,
-				   ConcurrentMap<String, RateLimitRule> pathPrefixIndex,
-				   ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPathIndex);
+		           ConcurrentMap<String, RateLimitRule> ipIndex,
+		           ConcurrentMap<String, RateLimitRule> pathExactIndex,
+		           ConcurrentMap<String, RateLimitRule> pathPrefixIndex,
+		           ConcurrentMap<String, RateLimitRule> ipPathIndex);
 	
 	void removeFromIndex(RateLimitRule rule,
-					 ConcurrentMap<String, RateLimitRule> ipIndex,
-					 ConcurrentMap<String, RateLimitRule> pathExactIndex,
-					 ConcurrentMap<String, RateLimitRule> pathPrefixIndex,
-					 ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPathIndex);
+				 ConcurrentMap<String, RateLimitRule> ipIndex,
+				 ConcurrentMap<String, RateLimitRule> pathExactIndex,
+				 ConcurrentMap<String, RateLimitRule> pathPrefixIndex,
+				 ConcurrentMap<String, RateLimitRule> ipPathIndex);
 	
 	boolean matches(RateLimitRule rule, String ip, String path);
 	

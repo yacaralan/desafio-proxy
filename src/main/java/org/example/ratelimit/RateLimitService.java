@@ -24,19 +24,18 @@ public class RateLimitService {
     private final ConcurrentMap<String, RateLimitRule> rulesById = new ConcurrentHashMap<>();
 
     // Indexes for fast lookup - single rule per key
-    private final ConcurrentMap<String, RateLimitRule> ipIndex = new ConcurrentHashMap<>(); // key: ip or "*"
+    private final ConcurrentMap<String, RateLimitRule> ipIndex = new ConcurrentHashMap<>(); // key: ip
     private final ConcurrentMap<String, RateLimitRule> pathExactIndex = new ConcurrentHashMap<>(); // key: exact path
     private final ConcurrentMap<String, RateLimitRule> pathPrefixIndex = new ConcurrentHashMap<>(); // key: prefix pattern ending with /*
-    private final ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPathIndex = new ConcurrentHashMap<>(); // key: ip or "*" -> (pathPattern -> rule)
+    // ipPathIndex maps compositeKey "ip|pathPattern" -> RateLimitRule
+    private final ConcurrentMap<String, RateLimitRule> ipPathIndex = new ConcurrentHashMap<>(); // key: "ip|path"
     // Only a single GLOBAL rule is allowed at a time. If a new GLOBAL rule is added it replaces the previous one.
     private volatile RateLimitRule globalRule = null;
 
-    // For each rule, map key (ip, path, ip|path or global) to a bucket
-    private final ConcurrentMap<String, ConcurrentMap<String, Bucket>> buckets = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Bucket> buckets = new ConcurrentHashMap<>();
 
     public RateLimitService() {
         // default example rules (these can be changed or extended via code or admin endpoints)
-        addRule(new RateLimitRule(RateLimitType.IP, "*", null, 1000));
         addRule(new RateLimitRule(RateLimitType.PATH, null, "/categories/*", 10000));
         addRule(new RateLimitRule(RateLimitType.IP_PATH, "152.152.152.152", "/items/*", 10));
         LOGGER.info("RateLimitService initialized with rules={}", getRules());
@@ -55,8 +54,7 @@ public class RateLimitService {
             if (existing != null) {
                 // remove existing global rule from indexes and master map and buckets
                 rulesById.remove(existing.getId());
-                existing.getType().removeFromIndex(existing, ipIndex, pathExactIndex, pathPrefixIndex, ipPathIndex);
-                buckets.remove(existing.getId());
+                removeBucketForRule(existing.getId());
                 LOGGER.info("Replaced existing GLOBAL rule id={} with new GLOBAL rule id={}", existing.getId(), rule.getId());
             }
             this.globalRule = rule;
@@ -69,7 +67,7 @@ public class RateLimitService {
             if (previous != null) {
                 // remove previous rule from master map and buckets
                 rulesById.remove(previous.getId());
-                buckets.remove(previous.getId());
+                removeBucketForRule(previous.getId());
                 LOGGER.info("Replaced existing rule id={} with new rule id={}", previous.getId(), rule.getId());
             }
             rulesById.put(rule.getId(), rule);
@@ -85,8 +83,8 @@ public class RateLimitService {
         RateLimitRule foundRule = rulesById.remove(id);
         if (foundRule == null) return false;
         foundRule.getType().removeFromIndex(foundRule, ipIndex, pathExactIndex, pathPrefixIndex, ipPathIndex);
-        // remove buckets for this rule id
-        buckets.remove(foundRule.getId());
+        // remove bucket for this rule id
+        removeBucketForRule(foundRule.getId());
         if (globalRule != null && globalRule.getId().equals(foundRule.getId())) {
             globalRule = null;
         }
@@ -96,66 +94,88 @@ public class RateLimitService {
 
 
     private Bucket createBucketFor(RateLimitRule rule) {
-        Bandwidth limit = Bandwidth.classic(rule.getRequestsPerMinute(), Refill.greedy(rule.getRequestsPerMinute(), Duration.ofMinutes(1)));
+        Bandwidth limit = Bandwidth.classic(rule.getRpm(), Refill.greedy(rule.getRpm(), Duration.ofMinutes(1)));
         return Bucket.builder().addLimit(limit).build();
     }
 
     public boolean tryConsume(String ip, String path) {
         LOGGER.debug("tryConsume called for ip={} path={}", ip, path);
-        // Collect candidate matching rules from indexes (avoid iterating all rules)
+
+        List<RateLimitRule> candidates = collectCandidates(ip, path);
+        List<RateLimitRule> uniqueCandidates = removeDuplicateCandidates(candidates);
+        boolean allowed = evaluateCandidates(uniqueCandidates, ip, path);
+        if (allowed) {
+            LOGGER.debug("Request allowed for ip={} path={}", ip, path);
+        }
+        return allowed;
+    }
+
+    private List<RateLimitRule> collectCandidates(String ip, String path) {
         List<RateLimitRule> candidates = new ArrayList<>();
+        addIpCandidate(ip, candidates);
+        addPathCandidates(ip, path, candidates);
+        addIpPathCandidates(ip, path, candidates);
+        addGlobalCandidate(candidates);
+        return candidates;
+    }
 
-        // IP rules: exact ip and wildcard
-        if (ip != null) {
-            RateLimitRule ipRule = ipIndex.get(ip);
-            if (ipRule != null) candidates.add(ipRule);
-        }
-        RateLimitRule wildcardIpRule = ipIndex.get("*");
-        if (wildcardIpRule != null) candidates.add(wildcardIpRule);
+    private void addIpCandidate(String ip, List<RateLimitRule> candidates) {
+        if (ip == null) return;
+        RateLimitRule ipRule = ipIndex.get(ip);
+        if (ipRule != null) candidates.add(ipRule);
+    }
 
-        // PATH exact
-        if (path != null) {
-            RateLimitRule pathExact = pathExactIndex.get(path);
-            if (pathExact != null) candidates.add(pathExact);
-            // prefix matches - iterate all prefix rules
-            for (RateLimitRule rule : pathPrefixIndex.values()) {
-                if (rule.matches(ip, path)) candidates.add(rule);
-            }
+    private void addPathCandidates(String ip, String path, List<RateLimitRule> candidates) {
+        if (path == null) return;
+        RateLimitRule pathRule = pathExactIndex.get(path);
+        if (pathRule != null) candidates.add(pathRule);
+        // prefix matches - iterate all prefix rules
+        for (RateLimitRule rule : pathPrefixIndex.values()) {
+            if (rule.matches(ip, path)) candidates.add(rule);
         }
+    }
 
-        // IP_PATH
-        if (ip != null) {
-            ConcurrentMap<String, RateLimitRule> ipMap = ipPathIndex.get(ip);
-            if (ipMap != null) {
-                for (RateLimitRule rule : ipMap.values()) if (rule.matches(ip, path)) candidates.add(rule);
-            }
+    private void addIpPathCandidates(String ip, String path, List<RateLimitRule> candidates) {
+        if (ip == null || path == null) return;
+        // exact composite lookup
+        String compositeExact = ip + "|" + path;
+        RateLimitRule exact = ipPathIndex.get(compositeExact);
+        if (exact != null) candidates.add(exact);
+        // also consider pattern rules registered for this ip (keys like "ip|/sites/*"); iterate entries but only those for this ip
+        String prefix = ip + "|";
+        for (ConcurrentMap.Entry<String, RateLimitRule> e : ipPathIndex.entrySet()) {
+            String key = e.getKey();
+            if (!key.startsWith(prefix)) continue;
+            RateLimitRule rule = e.getValue();
+            if (rule == exact) continue; // already added
+            if (rule.matches(ip, path)) candidates.add(rule);
         }
-        ConcurrentMap<String, RateLimitRule> ipMapWild = ipPathIndex.get("*");
-        if (ipMapWild != null) {
-            for (RateLimitRule rule : ipMapWild.values()) if (rule.matches(ip, path)) candidates.add(rule);
-        }
+    }
 
-        // GLOBAL: only at most one rule exists
+    private void addGlobalCandidate(List<RateLimitRule> candidates) {
         RateLimitRule globalRuleRef = globalRule;
         if (globalRuleRef != null) candidates.add(globalRuleRef);
+    }
 
-        // Remove duplicates (same rule may have been added multiple times via indexes)
-        List<RateLimitRule> uniqueCandidates = new ArrayList<>(new HashSet<>(candidates));
+    private List<RateLimitRule> removeDuplicateCandidates(List<RateLimitRule> candidates) {
+        return new ArrayList<>(new HashSet<>(candidates));
+    }
 
-        // Evaluate all candidate rules; if any matching rule denies, deny request.
-        for (RateLimitRule candidateRule : uniqueCandidates) {
-            if (!candidateRule.matches(ip, path)) continue;
-            String key = candidateRule.computeKey(ip, path);
-            ConcurrentMap<String, Bucket> bucketMap = buckets.computeIfAbsent(candidateRule.getId(), ruleId -> new ConcurrentHashMap<>());
-            Bucket bucket = bucketMap.computeIfAbsent(key, bucketKey -> createBucketFor(candidateRule));
+    private boolean evaluateCandidates(List<RateLimitRule> candidates, String ip, String path) {
+        for (RateLimitRule rule : candidates) {
+            Bucket bucket = buckets.computeIfAbsent(rule.getId(), id -> createBucketFor(rule));
             boolean ok = bucket.tryConsume(1);
-            LOGGER.debug("Rule={} key={} tryConsume result={}", candidateRule, key, ok);
+            LOGGER.debug("Rule={} key={} tryConsume result={}", rule, rule.getId(), ok);
             if (!ok) {
-                LOGGER.info("Request denied by rate-limit rule={} for key={} ip={} path={}", candidateRule, key, ip, path);
+                LOGGER.info("Request denied by rate-limit rule={} for key={} ip={} path={}", rule, rule.getId(), ip, path);
                 return false;
             }
         }
-        LOGGER.debug("Request allowed for ip={} path={}", ip, path);
         return true;
+    }
+	
+    private void removeBucketForRule(String ruleId) {
+        if (ruleId == null) return;
+        buckets.remove(ruleId);
     }
 }

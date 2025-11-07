@@ -54,9 +54,9 @@ Endpoints:
     - `400` con `{ "ok": false, "error": "<mensaje>" }` para peticiones inválidas.
 
   - Ejemplos de body válidos:
-    - IP: `{ "type": "IP", "ip": "127.0.0.1", "rpm": 100 }`
+    - IP: `{ "type": "IP", "ip": "192.168.0.254", "rpm": 100 }`
     - PATH: `{ "type": "PATH", "path": "/api/test", "rpm": 50 }`
-    - IP_PATH: `{ "type": "IP_PATH", "ip": "192.168.1.1", "path": "/api/user", "rpm": 10 }`
+    - IP_PATH: `{ "type": "IP_PATH", "ip": "192.168.0.254", "path": "/api/user", "rpm": 10 }`
     - GLOBAL: `{ "type": "GLOBAL", "rpm": 1000 }`
 
 - DELETE `/admin/rules/{id}`

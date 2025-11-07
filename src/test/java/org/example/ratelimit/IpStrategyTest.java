@@ -58,7 +58,7 @@ public class IpStrategyTest {
     public void index_and_remove_updateIpIndex() {
         ConcurrentMap<String, RateLimitRule> ipIndex = new ConcurrentHashMap<>();
         ConcurrentMap<String, RateLimitRule> pathExact = new ConcurrentHashMap<>();
-        ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPath = new ConcurrentHashMap<>();
+        ConcurrentMap<String, RateLimitRule> ipPath = new ConcurrentHashMap<>();
         ConcurrentMap<String, RateLimitRule> pathPrefix = new ConcurrentHashMap<>();
 
         RateLimitRule r = new RateLimitRule(RateLimitType.IP, "5.6.7.8", null, 100);

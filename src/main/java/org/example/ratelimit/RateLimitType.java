@@ -33,7 +33,7 @@ public enum RateLimitType {
                       ConcurrentMap<String, RateLimitRule> ipIndex,
                       ConcurrentMap<String, RateLimitRule> pathExactIndex,
                       ConcurrentMap<String, RateLimitRule> pathPrefixIndex,
-                      ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPathIndex) {
+                      ConcurrentMap<String, RateLimitRule> ipPathIndex) {
         return strategy.index(rule, ipIndex, pathExactIndex, pathPrefixIndex, ipPathIndex);
     }
 
@@ -41,7 +41,7 @@ public enum RateLimitType {
                                 ConcurrentMap<String, RateLimitRule> ipIndex,
                                 ConcurrentMap<String, RateLimitRule> pathExactIndex,
                                 ConcurrentMap<String, RateLimitRule> pathPrefixIndex,
-                                ConcurrentMap<String, ConcurrentMap<String, RateLimitRule>> ipPathIndex) {
+                                ConcurrentMap<String, RateLimitRule> ipPathIndex) {
         strategy.removeFromIndex(rule, ipIndex, pathExactIndex, pathPrefixIndex, ipPathIndex);
     }
 

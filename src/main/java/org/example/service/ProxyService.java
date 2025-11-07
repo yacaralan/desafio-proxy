@@ -96,8 +96,6 @@ public class ProxyService {
         }
 
         statsService.recordUpstreamStatus(ip, path, proxyResp.getStatus());
-
-        // Delegate header filtering and content-type defaulting to mapper
         return mapper.map(proxyResp, defaultContentType);
     }
 

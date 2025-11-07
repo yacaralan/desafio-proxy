@@ -43,7 +43,6 @@ public class DefaultProxyClient implements ProxyClient {
                     HttpHeaders eh = new HttpHeaders();
                     // do not force Content-Type header here; return empty headers and error body
                     String msg = "upstream error: " + ex.getMessage();
-                    LOGGER.error("Upstream call failed: {}", ex.getMessage(), ex);
                     return Mono.just(new ProxyResponse(502, eh, msg.getBytes()));
                 });
     }
