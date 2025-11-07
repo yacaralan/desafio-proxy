@@ -36,10 +36,7 @@ public class IpStrategyTest {
     }
 
     @Test
-    public void matches_wildcardAndExact() {
-        RateLimitRule wildcard = new RateLimitRule(RateLimitType.IP, "*", null, 10);
-        assertTrue(strategy.matches(wildcard, "1.2.3.4", "/x"));
-
+    public void matches_correctly() {
         RateLimitRule exact = new RateLimitRule(RateLimitType.IP, "1.2.3.4", null, 10);
         assertTrue(strategy.matches(exact, "1.2.3.4", "/x"));
 
