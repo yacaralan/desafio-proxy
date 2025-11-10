@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.LongAdder;
@@ -55,7 +56,7 @@ public class StatsService {
     }
 
     public Map<String, Object> snapshot() {
-        ConcurrentHashMap<String, Object> m = new ConcurrentHashMap<>();
+        Map<String, Object> m = new HashMap<>();
         m.put("total", totalRequests.sum());
         m.put("allowed", allowedRequests.sum());
         m.put("denied", deniedRequests.sum());
@@ -72,7 +73,7 @@ public class StatsService {
     }
 
     private Map<String, Long> toSimpleMap(ConcurrentHashMap<String, LongAdder> source) {
-        ConcurrentHashMap<String, Long> r = new ConcurrentHashMap<>();
+        Map<String, Long> r = new HashMap<>();
         for (Map.Entry<String, LongAdder> e : source.entrySet()) r.put(e.getKey(), e.getValue().sum());
         return r;
     }
